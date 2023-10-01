@@ -19,4 +19,4 @@ A toolkit to add inline annotations to common code hosts like Github, Gitlab, an
 | Name        | Search | Files |
 | ----------- | ------ | ----- |
 | Sourcegraph | :x:    | :x:   |
-| GitHub Code Search | :x: | :white_check_mark: (same as [Git Host](#git-hosts))
+| GitHub Code Search | :x: | :white_check_mark: (same as [Git Host](#git-hosts)) |
