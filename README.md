@@ -16,7 +16,7 @@ A toolkit to add inline annotations to common code hosts like Github, Gitlab, an
 
 ### Code Search
 
-| Name               | Search | Files                                               |
-| ------------------ | ------ | --------------------------------------------------- |
-| Sourcegraph        | :x:    | :x:                                                 |
-| GitHub Code Search | :x:    | :white_check_mark: (same as [Git Host](#git-hosts)) |
+| Name               | Search | Files                                               | Note |
+| ------------------ | ------ | --------------------------------------------------- | ---- |
+| Sourcegraph        | :x:    | :x:                                                 | Soucegraph's codemirror implementation deletes any dom modifications after change. At the time being injecting annotations will not be possible for this code host |
+| GitHub Code Search | :x:    | :white_check_mark: (same as [Git Host](#git-hosts)) | |
