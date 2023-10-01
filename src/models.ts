@@ -1,0 +1,1 @@
+export type OnStyleNodeCallback = (node: HTMLElement, meta: {line: number, start: number, end: number}) => void;
