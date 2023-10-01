@@ -2,6 +2,45 @@
 
 A toolkit to add inline annotations to common code hosts like Github, Gitlab, and Bitbucket
 
+## Usage
+
+Add the following to your `package.json`
+```
+{
+  "dependencies": {
+    "codehost-annotation-toolkit": "git://github.com/matthewnitschke/codehost-annotation-toolkit",
+  }
+}
+```
+
+```js
+import { annotateFile, annotateFiles } from 'codehost-annotation-toolkit';
+
+// annotates a single file
+annotateFile({
+  // The ranges within the file that should be annotated
+  annotations: [
+    // in the format of: [line, start, end]
+    [1, 4, 5],
+    [...]
+  ],
+  onStyleNode: (el) => el.style.textDecoration = 'line-through',
+
+  // optional, only necessary if multiple files can be displayed on the page at once
+  fileName: 'path/to/your/file.ext'
+});
+
+annotateFiles({
+  // The ranges within the file that should be annotated
+  annotations: {
+    'path/to/your/file.ext': [
+      [1, 4, 5]
+    ]
+  }
+  onStyleNode: (el) => el.style.textDecoration = 'line-through'
+});
+```
+
 ## Compatibility
 
 `codehost-annotation-tookit` is still very much in progress. Compatibility is limited based on what I need at the time. PRs/Issues are welcome for additional code host support
