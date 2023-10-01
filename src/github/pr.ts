@@ -1,4 +1,5 @@
 import { OnStyleNodeCallback } from "../models";
+import { wrapTextNodes } from "../utils";
 
 export function annotatePr(
     annotations: {[fileName: string]: number[][]},
@@ -27,7 +28,7 @@ function injectAnnotation(
 
     wrapTextNodes(codeEl);
 
-    let lineContent = codeEl.querySelectorAll<HTMLSpanElement>('.blob-code-inner span:not(:has(*))');
+    let lineContent = codeEl.querySelectorAll<HTMLSpanElement>('span:not(:has(*))');
 
     let pos = 0;
     lineContent.forEach((lineEl) => {
@@ -68,16 +69,4 @@ function injectAnnotation(
 
         pos += lineEl.innerText.length;
     });
-}
-
-function wrapTextNodes(node: HTMLElement) {
-    if (node.nodeType === Node.TEXT_NODE && node.parentNode!.childNodes.length > 1) {
-        const span = document.createElement('span');
-        span.textContent = node.textContent;
-        node.parentNode!.replaceChild(span, node);
-    }
-
-    for (let i = 0; i < node.childNodes.length; i++) {
-      wrapTextNodes(node.childNodes[i] as HTMLElement);
-    }
 }
