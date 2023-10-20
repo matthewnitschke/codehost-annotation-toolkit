@@ -5,7 +5,7 @@ export function annotateFile(
     onStyleNode: OnStyleNodeCallback,
 ) {
     annotations.forEach(([line, start, end]) => {
-        let lineEl = document.querySelector(`.react-code-text[data-key="${line}"] .react-file-line`);
+        let lineEl = document.querySelector<HTMLElement>(`.react-code-text[data-key="${line}"] .react-file-line`);
         if (lineEl == null) return;
 
         let spans = lineEl.querySelectorAll('span');
@@ -18,7 +18,7 @@ export function annotateFile(
             let spanEnd = pos + codeText.length;
 
             if (start <= spanStart && end >= spanEnd) {
-                onStyleNode(span, {line, start, end});
+                onStyleNode(span, lineEl!, {line, start, end});
             } else if (start >= spanStart && start < spanEnd) {
                 let offset = start - spanStart;
                 let length = Math.min(end, spanEnd) - start;
@@ -28,7 +28,7 @@ export function annotateFile(
 
                 span.dataset.codeText = codeText.substring(0, offset);
                 contentEl.dataset.codeText = codeText.substring(offset, offset + length);
-                onStyleNode(contentEl, {line, start, end});
+                onStyleNode(contentEl, lineEl!, {line, start, end});
                 suffixEl.dataset.codeText = codeText.substring(offset + length);
 
                 span.after(contentEl, suffixEl);
@@ -38,7 +38,7 @@ export function annotateFile(
                 let suffixEl = span.cloneNode() as HTMLSpanElement;
 
                 span.dataset.codeText = codeText.substring(0, length);
-                onStyleNode(span, {line, start, end});
+                onStyleNode(span, lineEl!, {line, start, end});
                 suffixEl.dataset.codeText = codeText.substring(length);
                 span.after(suffixEl);
             }

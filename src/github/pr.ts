@@ -36,7 +36,7 @@ function injectAnnotation(
         let spanEnd = pos + lineEl.innerText.length;
 
         if (start <= spanStart && end >= spanEnd) {
-            onStyleNode(lineEl, {line, start, end});
+            onStyleNode(lineEl, lineEl, {line, start, end});
         } else if (start >= spanStart && start < spanEnd) {
             let offset = start - spanStart;
             let length = Math.min(end, spanEnd) - start;
@@ -48,7 +48,7 @@ function injectAnnotation(
             lineEl.innerText = prefix;
             let annotatedSpan = document.createElement('span');
             annotatedSpan.innerText = content;
-            onStyleNode(annotatedSpan, {line, start, end});
+            onStyleNode(annotatedSpan, lineEl, {line, start, end});
 
             lineEl.appendChild(annotatedSpan);
             lineEl.appendChild(document.createTextNode(suffix));
@@ -61,7 +61,7 @@ function injectAnnotation(
             lineEl.innerText = '';
             let annotatedSpan = document.createElement('span');
             annotatedSpan.innerText = content;
-            onStyleNode(annotatedSpan, {line, start, end});
+            onStyleNode(annotatedSpan, lineEl, {line, start, end});
 
             lineEl.appendChild(annotatedSpan);
             lineEl.appendChild(document.createTextNode(suffix));
