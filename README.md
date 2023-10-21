@@ -1,5 +1,8 @@
 # Code Host Annotation Toolkit
 
+> [!IMPORTANT]
+> This project is very much still in alpha, feel free to use/experiment with, but please don't use in a production use-case, its API will change without warning, and everything is largely untested
+
 A toolkit to add inline annotations to common code hosts like Github, Gitlab, and Bitbucket
 
 ## Usage
