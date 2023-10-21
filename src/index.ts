@@ -1,4 +1,4 @@
-import { OnStyleNodeCallback } from "./models";
+import { OnStyleLineCallback, OnStyleSpanCallback, Location } from "./models";
 
 import { annotateFile as annotateGithubFileView } from "./github/file";
 import { annotatePr as annotateGithubPrFilesView } from "./github/pr";
@@ -8,31 +8,44 @@ const isGithubPrFilesView = () => window.location.href.match(/https:\/\/github\.
 
 export function annotateFile(options: {
     fileName?: string,
-    annotations: number[][],
-    onStyleNode: OnStyleNodeCallback,
+    annotations: Location[],
+    onStyleLine?: OnStyleLineCallback,
+    onStyleSpan?: OnStyleSpanCallback,
 }) {
     if (isGithubFileView()) {
-        annotateGithubFileView(options.annotations, options.onStyleNode);
+        annotateGithubFileView(options.annotations, options.onStyleLine, options.onStyleSpan);
     } else if (isGithubPrFilesView()) {
-        if (options.fileName == null) throw Error('TBD');
+        if (options.fileName == null) throw Error('File name is required on github pr view annotations');
 
-        annotateGithubPrFilesView({ [options.fileName]: options.annotations }, options.onStyleNode);
+        annotateGithubPrFilesView({ [options.fileName]: options.annotations }, options.onStyleLine, options.onStyleSpan);
     } else {
-        throw Error('TBD');
+        throw Error(`Unknown href: ${window.location.href}`);
     }
 }
 
 export function annotateFiles(options: {
-    files: {[fileName: string]: number[][]},
-    onStyleNode: OnStyleNodeCallback,
+    files: {[fileName: string]: Location[]},
+    onStyleLine?: OnStyleLineCallback,
+    onStyleSpan?: OnStyleSpanCallback,
 }) {
     if (isGithubFileView()) {
-        if (Object.keys(options.files).length > 1) throw Error('TBD');
-
-        annotateGithubFileView(Object.values(options.files)[0], options.onStyleNode);
+        if (Object.keys(options.files).length > 1) throw Error('Multiple files provided on github singular file view');
+        annotateGithubFileView(Object.values(options.files)[0], options.onStyleLine, options.onStyleSpan);
     } else if (isGithubPrFilesView()) {
-        annotateGithubPrFilesView(options.files, options.onStyleNode);
+        annotateGithubPrFilesView(options.files, options.onStyleLine, options.onStyleSpan);
     } else {
-        throw Error('TBD');
+        throw Error(`Unknown href: ${window.location.href}`);
     }
+}
+
+export async function waitForReady() {
+    return new Promise<void>((acc, rej) => {
+        setInterval(() => {
+            if (isGithubFileView() && document.querySelector('.react-code-text') != null) {
+                acc();
+            } else if (isGithubPrFilesView() && document.querySelector('.js-file-line') != null) {
+                acc();
+            }
+        }, 100)
+    })
 }

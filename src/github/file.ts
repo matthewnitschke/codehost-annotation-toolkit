@@ -1,14 +1,28 @@
-import { OnStyleNodeCallback } from "../models";
+import { OnStyleLineCallback, OnStyleSpanCallback, Location } from "../models";
 
 export function annotateFile(
-    annotations: number[][],
-    onStyleNode: OnStyleNodeCallback,
+    annotations: Location[],
+    onStyleLine?: OnStyleLineCallback,
+    onStyleSpan?: OnStyleSpanCallback,
 ) {
-    annotations.forEach(([line, start, end]) => {
+    annotations.forEach((location) => {
+        let line = typeof location === 'number' ? location : location[0];
+
         let lineEl = document.querySelector<HTMLElement>(`.react-code-text[data-key="${line}"] .react-file-line`);
         if (lineEl == null) return;
 
+        if (onStyleLine != null) onStyleLine(lineEl, {line});
+
+        // No need to run span logic if onStyleSpan wasn't provided
+        if (onStyleSpan == null) return;
+
+        // onStyleSpan might be populated, but [location] only contains a single line reference
+        // in this case we're just styling the line, so skip the span logic
+        if (!Array.isArray(line)) return;
+
         let spans = lineEl.querySelectorAll('span');
+
+        let [_, start, end] = line;
 
         let pos = 0;
         spans.forEach((span) => {
@@ -18,7 +32,7 @@ export function annotateFile(
             let spanEnd = pos + codeText.length;
 
             if (start <= spanStart && end >= spanEnd) {
-                onStyleNode(span, lineEl!, {line, start, end});
+                onStyleSpan(span, {line, start, end});
             } else if (start >= spanStart && start < spanEnd) {
                 let offset = start - spanStart;
                 let length = Math.min(end, spanEnd) - start;
@@ -28,7 +42,7 @@ export function annotateFile(
 
                 span.dataset.codeText = codeText.substring(0, offset);
                 contentEl.dataset.codeText = codeText.substring(offset, offset + length);
-                onStyleNode(contentEl, lineEl!, {line, start, end});
+                onStyleSpan(contentEl, {line, start, end});
                 suffixEl.dataset.codeText = codeText.substring(offset + length);
 
                 span.after(contentEl, suffixEl);
@@ -38,7 +52,7 @@ export function annotateFile(
                 let suffixEl = span.cloneNode() as HTMLSpanElement;
 
                 span.dataset.codeText = codeText.substring(0, length);
-                onStyleNode(span, lineEl!, {line, start, end});
+                onStyleSpan(span, {line, start, end});
                 suffixEl.dataset.codeText = codeText.substring(length);
                 span.after(suffixEl);
             }

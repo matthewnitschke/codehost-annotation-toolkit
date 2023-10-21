@@ -22,9 +22,16 @@ annotateFile({
   annotations: [
     // in the format of: [line, start, end]
     [1, 4, 5],
-    [...]
+
+    // or just the line to annotate (only runs [onStyleLine])
+    8,
   ],
-  onStyleNode: (el) => el.style.textDecoration = 'line-through',
+
+  // styles the 4-5 span
+  onStyleSpan: (el, {line, start, end}) => el.style.textDecoration = 'line-through',
+
+  // styles line 1, and 8
+  onStyleLine: (el, {line}) => el.style.backgroundColor = 'yellow',
 
   // optional, only necessary if multiple files can be displayed on the page at once
   fileName: 'path/to/your/file.ext'
@@ -36,8 +43,8 @@ annotateFiles({
     'path/to/your/file.ext': [
       [1, 4, 5]
     ]
-  }
-  onStyleNode: (el) => el.style.textDecoration = 'line-through'
+  },
+  onStyleSpan: (el, {line, start, end}) => el.style.textDecoration = 'line-through'
 });
 ```
 

@@ -1,34 +1,49 @@
-import { OnStyleNodeCallback } from "../models";
+import { OnStyleLineCallback, OnStyleSpanCallback, Location } from "../models";
 import { wrapTextNodes } from "../utils";
 
 export function annotatePr(
-    annotations: {[fileName: string]: number[][]},
-    onStyleNode: OnStyleNodeCallback,
+    annotations: {[fileName: string]: Location[]},
+    onStyleLine?: OnStyleLineCallback,
+    onStyleSpan?: OnStyleSpanCallback,
 ) {
     let fileNames = Object.keys(annotations);
     for (var i = 0; i < fileNames.length; i ++) {
         let fileName = fileNames[i];
 
         for (var j = 0; j < annotations[fileName].length; j ++) {
-            injectAnnotation(fileName, annotations[fileName][j], onStyleNode);
+            injectAnnotation(fileName, annotations[fileName][j], onStyleLine, onStyleSpan);
         }
     }
 }
 
 function injectAnnotation(
     fileName: string,
-    [line, start, end]: number[],
-    onStyleNode: OnStyleNodeCallback,
+    location: Location,
+    onStyleLine?: OnStyleLineCallback,
+    onStyleSpan?: OnStyleSpanCallback,
 ) {
+    let line = typeof location === 'number' ? location : location[0];
+
     let lineElBtn = document.querySelector(`.js-file-line button[data-path="${fileName}"][data-line="${line}"]`);
     if (lineElBtn == null) return;
 
     let codeEl = lineElBtn.parentNode?.querySelector<HTMLElement>('.blob-code-inner');
     if (codeEl == null) return;
 
+    if (onStyleLine != null) onStyleLine(codeEl.parentElement!, {line});
+
+    // No need to run span logic if onStyleSpan wasn't provided
+    if (onStyleSpan == null) return;
+
+    // onStyleSpan might be populated, but [location] only contains a single line reference
+    // in this case we're just styling the line, so skip the span logic
+    if (!Array.isArray(line)) return;
+
     wrapTextNodes(codeEl);
 
     let lineContent = codeEl.querySelectorAll<HTMLSpanElement>('span:not(:has(*))');
+
+    let [_, start, end] = line;
 
     let pos = 0;
     lineContent.forEach((lineEl) => {
@@ -36,7 +51,7 @@ function injectAnnotation(
         let spanEnd = pos + lineEl.innerText.length;
 
         if (start <= spanStart && end >= spanEnd) {
-            onStyleNode(lineEl, codeEl!, {line, start, end});
+            onStyleSpan(lineEl, {line, start, end});
         } else if (start >= spanStart && start < spanEnd) {
             let offset = start - spanStart;
             let length = Math.min(end, spanEnd) - start;
@@ -48,7 +63,7 @@ function injectAnnotation(
             lineEl.innerText = prefix;
             let annotatedSpan = document.createElement('span');
             annotatedSpan.innerText = content;
-            onStyleNode(annotatedSpan, codeEl!, {line, start, end});
+            onStyleSpan(annotatedSpan, {line, start, end});
 
             lineEl.appendChild(annotatedSpan);
             lineEl.appendChild(document.createTextNode(suffix));
@@ -61,7 +76,7 @@ function injectAnnotation(
             lineEl.innerText = '';
             let annotatedSpan = document.createElement('span');
             annotatedSpan.innerText = content;
-            onStyleNode(annotatedSpan, codeEl!, {line, start, end});
+            onStyleSpan(annotatedSpan, {line, start, end});
 
             lineEl.appendChild(annotatedSpan);
             lineEl.appendChild(document.createTextNode(suffix));
