@@ -8,7 +8,7 @@ A toolkit to add inline annotations to common code hosts like Github, Gitlab, an
 ## Usage
 
 Add the following to your `package.json`
-```
+```json
 {
   "dependencies": {
     "codehost-annotation-toolkit": "git://github.com/matthewnitschke/codehost-annotation-toolkit",
