@@ -8,7 +8,7 @@ export function annotateFile(
     annotations.forEach((location) => {
         let line = typeof location === 'number' ? location : location[0];
 
-        let lineEl = document.querySelector<HTMLElement>(`.react-code-text[data-key="${line}"] .react-file-line`);
+        let lineEl = document.querySelector<HTMLElement>(`.react-code-text[data-key="${line - 1}"]`);
         if (lineEl == null) return;
 
         if (onStyleLine != null) onStyleLine(lineEl, {line});
@@ -20,7 +20,7 @@ export function annotateFile(
         // in this case we're just styling the line, so skip the span logic
         if (!Array.isArray(line)) return;
 
-        let spans = lineEl.querySelectorAll('span');
+        let spans = lineEl.querySelectorAll<HTMLSpanElement>('.react-file-line span');
 
         let [_, start, end] = line;
 

@@ -39,13 +39,14 @@ export function annotateFiles(options: {
 }
 
 export async function waitForReady() {
+    let intervalId: number;
     return new Promise<void>((acc, rej) => {
-        setInterval(() => {
+        intervalId = setInterval(() => {
             if (isGithubFileView() && document.querySelector('.react-code-text') != null) {
                 acc();
             } else if (isGithubPrFilesView() && document.querySelector('.js-file-line') != null) {
                 acc();
             }
         }, 100)
-    })
+    }).then(() => clearInterval(intervalId));
 }
