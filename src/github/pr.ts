@@ -37,13 +37,13 @@ function injectAnnotation(
 
     // onStyleSpan might be populated, but [location] only contains a single line reference
     // in this case we're just styling the line, so skip the span logic
-    if (!Array.isArray(line)) return;
+    if (!Array.isArray(location)) return;
 
     wrapTextNodes(codeEl);
 
     let lineContent = codeEl.querySelectorAll<HTMLSpanElement>('span:not(:has(*))');
 
-    let [_, start, end] = line;
+    let [_, start, end] = location;
 
     let pos = 0;
     lineContent.forEach((lineEl) => {
